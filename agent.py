@@ -1,9 +1,13 @@
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage
+from langchain_core.messages import HumanMessage
+
 model = ChatOllama(model="llama3.1:8b")
 
 def llm_call(state: MessagesState):
-    return {"messages": [model.invoke(state["messages"])]}
+    system = SystemMessage(content="You are a helpful assistant. Be concise.")
+    return {"messages": [model.invoke([system] + state["messages"])]}
 
 def should_continue(state: MessagesState):
     last_message = state["messages"][-1]
@@ -19,8 +23,6 @@ graph_builder.add_edge(START, "llm_call")
 graph_builder.add_conditional_edges("llm_call", should_continue)
 
 graph = graph_builder.compile()
-
-from langchain_core.messages import HumanMessage
 
 while True:
     user_input = input("Me: ")
