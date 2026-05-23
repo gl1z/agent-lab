@@ -22,5 +22,9 @@ graph = graph_builder.compile()
 
 from langchain_core.messages import HumanMessage
 
-result = graph.invoke({"messages": [HumanMessage(content="what is 2 + 2?")]})
-print(result["messages"][-1].content)
+while True:
+    user_input = input("Me: ")
+    if user_input.lower() in ["exit", "quit"]:
+        break
+    result = graph.invoke({"messages": [HumanMessage(content=user_input)]})
+    print("Llama:", result["messages"][-1].content)
