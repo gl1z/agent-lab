@@ -1,0 +1,5 @@
+hello, what can you do?
+what is 2 + 2?
+explain what an API is in one sentence
+what is Python used for?
+what is LangGraph?
