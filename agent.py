@@ -3,12 +3,13 @@ from langgraph.prebuilt import ToolNode
 from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from tools import get_current_time
+from prompts import SYSTEM_PROMPT
 
 tools = [get_current_time]
 model = ChatOllama(model="llama3.1:8b").bind_tools(tools)
 
 def llm_call(state: MessagesState):
-    system = SystemMessage(content="You are a helpful assistant. Be concise.")
+    system = SystemMessage(content=SYSTEM_PROMPT)
     return {"messages": [model.invoke([system] + state["messages"])]}
 
 def should_continue(state: MessagesState):
