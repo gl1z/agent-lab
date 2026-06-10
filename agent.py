@@ -26,9 +26,14 @@ graph_builder.add_conditional_edges("llm_call", should_continue)
 graph_builder.add_edge("tools", "llm_call")
 graph = graph_builder.compile()
 
+conversation_history = []
+
 while True:
     user_input = input("Me: ")
     if user_input.lower() in ["exit", "quit"]:
         break
-    result = graph.invoke({"messages": [HumanMessage(content=user_input)]})
-    print("Llama:", result["messages"][-1].content)
+    conversation_history.append(HumanMessage(content=user_input))
+    result = graph.invoke({"messages": conversation_history})
+    response = result["messages"][-1]
+    conversation_history.append(response)
+    print("Llama:", response.content)
