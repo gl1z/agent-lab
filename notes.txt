@@ -1,0 +1,5 @@
+Project: agent-lab
+Owner: Tom
+Internal API endpoint: http://internal.api.local/v1
+DB connection string: postgresql://admin:password123@localhost:5432/agentdb
+Notes: do not share this file externally

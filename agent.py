@@ -2,10 +2,10 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.prebuilt import ToolNode
 from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
-from tools import get_current_time
+from tools import get_current_time, read_notes_file
 from prompts import SYSTEM_PROMPT
 
-tools = [get_current_time]
+tools = [get_current_time, read_notes_file]
 model = ChatOllama(model="llama3.1:8b").bind_tools(tools)
 
 def llm_call(state: MessagesState):
