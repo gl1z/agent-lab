@@ -1,50 +1,66 @@
 # agent-lab
 
-A LangGraph agent running locally via Ollama. Built as the test subject 
-for Apodex, a runtime security monitoring framework for LLM agents.
+A LangGraph agent running locally on Ollama. This is the test subject for 
+Apodex — my dissertation project on runtime security monitoring for LLM agents.
 
 ## What this is
 
-This repo contains a simple LangGraph agent used to study and document 
-unsafe behaviour in LLM agents before building detectors for it. The 
-agent is intentionally minimal; no guardrails, no safety layer, so 
-that attack patterns can be observed cleanly.
+A minimal LangGraph agent built to study how LLM agents misbehave. No 
+guardrails, no safety layer. The point is to observe attack patterns cleanly 
+before building detectors for them in Apodex.
 
 ## Why this exists
 
-Apodex needs a real agent to monitor. This is that agent. Every 
-vulnerability documented here maps to a detector in Apodex.
+Apodex needs something to monitor. This is it. Every finding here maps to 
+a detector I'm building.
 
 ## Stack
+
 - LangGraph
-- Ollama (Llama 3.1 8B)
+- Ollama (Llama 3.1 8B) — running locally on a 3080 Ti
 - Python 3.13
-- Tools: get_current_time
+- Tools: get_current_time, read_notes_file
+- Memory: conversation history persists within a session
+- Tracing: OpenTelemetry + Arize Phoenix
 
 ## How to run
+
+Start Phoenix first — it needs to be running before the agent so it can 
+receive traces:
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
-pip install langgraph langchain langchain-community langchain-ollama
+pip install langgraph langchain langchain-community langchain-ollama opentelemetry-sdk openinference-instrumentation-langchain opentelemetry-exporter-otlp-proto-grpc arize-phoenix
+python -m phoenix.server.main serve
+```
+
+Then in a second terminal:
+
+```bash
+.venv\Scripts\activate
 python agent.py
 ```
 
-## Current agent behaviour
+Traces show up at `http://localhost:6006`.
 
-24 security behaviour tests documented in `logs/sample_runs.md` covering:
+## What's been tested
+
+28 tests in `logs/sample_runs.md` across five categories:
+
 - Prompt injection and jailbreaking
 - Tool hallucination and misuse
-- Insecure output generation
+- Insecure output
 - Excessive agency
-- Data exfiltration attempts
+- Data exfiltration
 
-## Test prompts
+## Known gap
 
-Categorised attack prompts in `test_prompts/` — one file per detector category.
+If the model reproduces sensitive data from conversation history rather than 
+calling a tool again, no span is generated and Apodex misses it. Output 
+scanning on the final LLM response span is the fix — not just tool result 
+scanning.
 
-## Link to Apodex
+## Apodex
 
-This agent is the test subject for [Apodex](https://github.com/gl1z/apodex) 
-— a dissertation project exploring runtime security monitoring for LangGraph 
-agents using OpenTelemetry.
+[github.com/gl1z/apodex](https://github.com/gl1z/apodex)
