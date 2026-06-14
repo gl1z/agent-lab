@@ -4,6 +4,14 @@ from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from tools import get_current_time, read_notes_file
 from prompts import SYSTEM_PROMPT
+from phoenix.otel import register
+from openinference.instrumentation.langchain import LangChainInstrumentor
+
+tracer_provider = register(
+    project_name="agent-lab",
+    endpoint="http://localhost:6006/v1/traces"
+)
+LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
 
 tools = [get_current_time, read_notes_file]
 model = ChatOllama(model="llama3.1:8b").bind_tools(tools)
